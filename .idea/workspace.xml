@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ebeab4a7-248e-449a-8c8f-31ec83a13a7c" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dns.js" afterPath="$PROJECT_DIR$/dns.js" />
-    </list>
+    <list default="true" id="ebeab4a7-248e-449a-8c8f-31ec83a13a7c" name="Default" comment="" />
     <ignored path="Node.js.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -53,7 +51,8 @@
     <order />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="541" />
+    <option name="x" value="486" />
+    <option name="y" value="50" />
     <option name="width" value="1382" />
     <option name="height" value="744" />
   </component>
@@ -108,7 +107,7 @@
     <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Confirmation" />
     <property name="nodejs_interpreter_path" value="C:/Program Files/nodejs/node" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Thinking-in-javaScript" />
     <property name="HbShouldOpenHtmlAsHb" value="" />
   </component>
   <component name="RunManager">
@@ -127,7 +126,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="541" y="0" width="1382" height="744" extended-state="0" />
+    <frame x="486" y="50" width="1382" height="744" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
