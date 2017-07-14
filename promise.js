@@ -110,7 +110,21 @@ class Frame extends Component {
                <section className="header">
                  <Nav />
                </section>
+                <section className="container">
+                    {this.props.children}
+                </section>
             </div>
         )
     }
 }
+
+const routes = (
+    <Router history={hashHistory}>
+      <Route path="/" component={Frame}>
+        <IndexRoute component={Home} />
+          <Route path="detail/:id" component={Detail} />
+      </Route>
+    </Router>
+);
+
+export default routes;
