@@ -128,3 +128,108 @@ const routes = (
 );
 
 export default routes;
+
+import { combineReducers } from 'redux';
+
+//引入 reducer 及 actionCreator
+import list from '../components/Home';
+
+if(process.env.NODE_ENV === 'production'){
+    //这里的代码只会在生产环境运行
+}else {
+    //这里的代码之后再开发环境中运行
+}
+
+/*
+一个简单的reducer
+ */
+
+const LOAD_DATA = 'LOAD_DATA';
+const initialState = { };
+function loadData() {
+    return {
+        type: LOAD_DATA,
+    }
+};
+
+function reducer(state = initialState,action) {
+    switch (action.type) {
+        case LOAD_DATA:
+            return {
+                ...state,
+                data: action.payload,
+            };
+        default: return state;
+    }
+}
+
+function generateReducer(prefix,state) {
+    const LOAD_DATA = prefix + 'LOAD_DATA';
+
+    const initialState = { ...state,... };
+
+    return function reducer(state = initialState,action) {
+        switch (action.type) {
+            case LOAD_DATA:
+                return {
+                    ...state,
+                    data: action.payload,
+                };
+            default:
+                return state;
+        }
+    }
+}
+
+import React,{ Component } from 'react';
+
+class Form extends Component {
+    constructor(props){
+        super(props);
+
+        this.handleChangeAddress = this.handleChangeAddress.bind(this);
+        this.handleChangeGender  = this.handleChangeGender.bind(this);
+
+        this.state = {
+            name:'',
+            address:'',
+            gender:'',
+        };
+    }
+
+    handleChageName(e){
+        this.setState({
+            name:e.target.value,
+        });
+    }
+
+    handleChangeAddress(e){
+        this.setState({
+            gender: e.target.value,
+        })
+    }
+
+
+    handleChangeGender(e){
+        this.setState({
+            gender: e.target.value,
+        });
+    }
+
+    render() {
+        const { name,address,gender } = this.state;
+        return (
+            <form className="form">
+                <input name="name" value={name} onChange={this.handleChageName} />
+                <input name="gender" value={address} onChange={this.handleChangeAddress} />
+                <select name="gender" value={gender} onChange={this.handleChangeGender}>
+                  <option value="male" />
+                    <option value="female" />
+                </select>
+        )
+    }
+}
+
+/*
+components/MyForm.js
+ */
