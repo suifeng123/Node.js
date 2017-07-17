@@ -90,4 +90,60 @@ var start = function(res,req){
     }
 
     var SESSID = cookies.SESSID;  //获取当前的sessiond id
-}
+    if(typeof  sessions[SESSID] !== 'undefined') {
+        //判断是否存在session
+        session = sessions[SESSID];
+        if(session.expires <Date()){
+            //session 过期
+            delete sessions[SESSID];
+            return newSession(conn.res);
+        }else{
+            var dt = new Date();
+            dt.setMinutes(dt.getMinutes()+30);
+
+            session.expires = dt;
+            return sessions[SESSID];
+        }
+    }else {
+        return newSession(conn.res);
+    }
+};
+
+function newSession(res){
+    var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    var SESSID = '';
+    for(var i=0;i<40;i++){
+        var rnum = Math.floor(Math.random()*chars.length);
+        SESSID += chars.substring(rnum,rnum+1);
+    }
+
+    if(typeof sessions[SESSID] !== 'undefined'){
+        return newSession(res);
+    }
+
+    var dt = new Date();
+
+    dt.setMinutes(dt.getMinutes()+30);
+
+    var session = {
+        SESSSID:SESSID,
+        expires: dt
+    };
+
+    sessions[SESSID] = session;
+
+    res.setHeader('Set-Cookie','SESSID='+SESSID);
+
+    return session;
+};
+
+
+function cleanSessions(){
+    if(sess in sessions){
+        if(sess.expires < Date()){
+            delete sessions[sess.SESSID];
+        }
+    }
+};
+
+exports.start = start;
