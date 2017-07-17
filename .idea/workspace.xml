@@ -4,9 +4,7 @@
     <bookmark url="file://$PROJECT_DIR$/promise.js" line="81" mnemonic="9" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ebeab4a7-248e-449a-8c8f-31ec83a13a7c" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target.js" afterPath="$PROJECT_DIR$/target.js" />
-    </list>
+    <list default="true" id="ebeab4a7-248e-449a-8c8f-31ec83a13a7c" name="Default" comment="" />
     <ignored path="Node.js.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
