@@ -22,3 +22,23 @@ function Adapter(){
 
 util.inherits(Adapter,Target);
 module.exports =Adapter;
+
+
+var observable = function(val){
+    var cur = val; //一个内部的变量
+
+    function field(neo){
+        if(arguments.length){
+            //setter
+            if(cur !== neo){
+                cur = neo;
+            }else{
+                //getter
+                return cur;
+            }
+        }
+
+    }
+    field();
+    return field();
+};
