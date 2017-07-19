@@ -49,3 +49,17 @@
 
 	}
 })();
+
+
+var obj = {
+	aa: 1,
+	toString: function(){
+		return "1";
+	}
+}
+
+if(Object.defineProperty && Object.seal) {
+	Object.defineProperty(obj,"name",{
+		value:2
+	})
+}
