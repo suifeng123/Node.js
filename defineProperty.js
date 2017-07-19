@@ -70,3 +70,83 @@ if(typeof Object.definePropertiesn!== 'function'){
 	}
 }
 
+if(typeof Object.create !== 'function'){
+	Object.create = function(prototype,descs){
+		function F(){}
+
+		F.prototype = prototype;
+		var obj = new F();  //创建了一个新函数
+		if(descs != null){
+			Object.defineProperties(obj,descs);
+		}
+		return obj;
+	}
+}
+
+function Animal(name){
+	this.name = name;
+}
+
+Animal.prototype.getName = function(){
+	return this.name;
+}
+
+function Dog(name,age){
+	Animal.call(this,name);
+	this.age = age;
+}
+
+Dog.prototype = Object.create(Animal.prototype,{
+	getAge:{
+		value:function(){
+			return this.age;
+		}
+	},
+	setAge: {
+	   value: function(age){
+	   	this.age = age;
+	   }	
+	}
+});
+
+var createEmpty;
+var supportsProto = Object.prototype.__proto__ === null;
+if(supportsProto || typeof document === 'undefined'){
+	createEmpty = function(){
+		return {
+			"__proto__":null
+		};
+	};
+}else{
+	//因为我们无法让一个对象继承一个不存在的东西，它最后肯定要
+	//回溯到Object.prototype,那么我们就从一个新的执行环境盗取Object.prototype
+	////把它的所有的原型属性都砍掉，这样它的实例既没有特殊属性，也没有什么原型属性
+	//只剩下一个__proto__，值为null
+	createEmpty = (function(){
+		var iframe = document.createElement('iframe');
+		var parent = document.body || document.documentElement;
+		iframe.style.display = 'none';
+		parent.appendChild(iframe);
+		iframe.src = 'javascript';
+		var empty = iframe.contentWindow.Object.prototype;
+		parent.removeChild(iframe);
+		iframe = null;
+		delete empty.constructor;
+		delete empty.hasOwnProperty;
+		delete empty.propertyIsEnumberable;
+		delete empty.isPropertyOf;
+		delete empty.toLocalString;
+		delete empty.toString;
+		delete empty.valueOf;
+		empty.__proto__ = null;
+
+		function Empty(){} //定义一个函数
+
+		Empty.prototype = empty;
+
+		return function(){
+			return new Empty();
+		}
+	})();
+    
+}
