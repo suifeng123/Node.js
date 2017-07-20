@@ -150,3 +150,100 @@ if(supportsProto || typeof document === 'undefined'){
 	})();
     
 }
+
+
+var a = {
+	aa:'aa'
+};
+Object.preventExtensions(a);
+delete a.aa;  ///删除之后就不能再添加回来
+Object.prototype.ccc = 4; //不能阻止为原型添加属性
+
+var a = {
+	aa:'aa'
+};
+Object.seal(a);
+
+(function(global){
+	function fixDescriptor(item,definition,prop){
+		if(isPlainObject(item)){
+			if(!('enumberable' in item)){
+				item.enumberable = true;
+			}
+		}else{
+			//如果是以es3那样普通对象定义扩展包
+			item = definition[prop] = {
+				value:item,
+				enumberable:true,
+				writable:true
+			};
+		}
+		return item;
+	}
+
+	function isPlainObject(item){
+		if(typeof item === 'object' && item !== null){
+			var a = Object.getPropertyOf(item);
+			return a === Object.prototype || a === null;
+		}
+		return false;
+	}
+
+	var funNames = Object.getOwnPropertyNames(Function);
+	global.Class = {
+		create: function(superclass,definition){
+			if(arguments.length === 1){
+				definition = superclass;
+				superclass = Object;
+			}
+
+			if(typeof superclass !== 'function') {
+				throw new Error('superclass must be a function')
+			}
+			var _super = superclass.prototype;
+			var statics = definition.statics;
+			delete definition.statics;
+			//重新定义definition
+			Object.keys(definition).forEach(function(prop){
+				var item = fixDescriptor(definition[prop],definition,prop);
+				if(typeof item.value === 'function' && typeof _super[prop]==='function'){
+					var _super = function(){
+						//创建方法连
+						return _super[prop].apply(this,arguments);
+					};
+					var _superApply = function(args){
+						return _super[prop].apply(this,args);
+					};
+					var fn = item.value;
+					item.value = function(){
+						var t1 = this._super;
+						var t2 = this._superApply;
+					    this._super = _super;
+					    this._superApply = _superApply;
+					    var ret = fn.apply(this,arguments);
+					    this._super = t1;
+					    this._superApply = t2;
+					    return ret;
+					}
+				}
+			});
+
+			var Base = function(){
+				this.init.apply(this,arguments);
+			};
+			Base.prototype = Object.create(_super,definition);
+			Base.prototype.constructor = Base;
+			//确保一定存在的init方法
+			if(typeof Base.prototype.init !== 'function'){
+				Base.prototype.init = function(){
+					superclass.prototype.init = function(){
+						superclass.apply(this,arguments);
+					}
+				}
+			}
+
+
+			
+		}
+	}
+})
