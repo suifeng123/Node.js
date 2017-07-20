@@ -188,5 +188,145 @@ function manipulate(nodes,name,item,doc){
 	handler = insertHooks[name];
 	if(item.nodeType){
 		insertAdjacentNode(elems,item,handler);
+	}else if(typeof item === 'string'){
+
 	}
 }
+
+
+var expend = "jQuery" + (new Date()).getTime(),uuid = 0,windowData = {};
+jQuery.extend({
+	cache: {},
+	data: function(elem,name,data){
+		elem = elem == window?windowData:elem; //对window对象做特殊处理
+		var id = elem[expando];
+		id(!id) id=elem[expando] = ++uuid;
+		if(name && !jQuery.cache[id])
+			jQuery.cache[id] = {};
+		if(data != undefined){
+			jQuery.cache[id][name] = data;
+		}
+		return name ? jQuery.cache[id][name] : id;
+	},
+	removeData: function(elem,name){
+		elem = elem == window?windowData:elem;
+		var id = elem[expando];
+		if(name){
+			if(jQuery.cache[id]){
+				delete jQuery.cache[id][name];
+				name = "";
+
+				for(name in jQuery.cache[id])
+					break;
+				if(!name) jQuery.removeData(elem);
+			}
+		}else{
+			try{
+				delete elem[expando];
+			}catch(e){
+				if(elem.removeAttribute) elem.removeData(expando);
+			}
+			delete jQuery.cache[id];
+		}
+	}
+})
+
+function Data(){
+	this.cache = {};
+}
+
+Data.uuid = 1;
+Data.protoytpe = {
+	locker: function(owner){
+		var valueOf;
+
+		unlock = owner.valueOf(Data);
+
+		if(typeof unlock !== 'string'){
+			unlock = jQuery.expando + Data.uid++;
+			valueOf = owner.valueOf;
+
+			Object.defineProperty(owner,"valueOf",{
+				value: function(pick){
+					if(pick===Data){
+						return unlock;
+					}
+
+					return valueOf.apply(owner);
+				}
+
+			})
+		}
+		//接下来开辟缓存提
+		if(!this.cache[unlock]){
+			this.cache[unlock] = [];
+		}
+
+		return unlock;
+
+	},
+	set: function(owner,data,value){
+		var prop,cache,unlock;
+		unlock = this.locker(owner);
+		cache = this.cache[unlock];
+		if(data==='string'){
+			cache[data] = value;
+		}else{
+			if(jQuery.isEmptyObject(cache)){
+				cache = data;
+			}else{
+				for(prop in data){
+					cache[prop] = prop;
+				}
+			}
+		}
+		this.cached[unlock] = cache;
+
+		return this;
+	},
+	get: function(){
+		var cache = this.cache[this.locker(owner)];
+		return key === undefined ? cache : cache[key];
+
+	},
+	access: function(owner,key,value){
+      if(key === undefined || ((key && typeof key === 'string')&&
+      	value === undefined)){
+      	return this.get(owner,key);
+      }
+      this.set(owner,key,value);
+      return value !== undefined ? value :key;
+	},
+	remove: function(owner,key){
+
+	},
+	hasData: function(owner){
+
+	}
+
+
+
+}
+
+function isAttribute(attr,host){
+	//仅有ie
+	var attrs = host.attributes;
+	return attrs[attr] && attrs.expando === true;
+}
+
+readAttribute = function(element,name){
+	element = $(element);
+	if(Prototype.Browser.IE){
+		var t = Element._attributeTranslations.read;
+		if(t.values[name]){
+			return t.values[name](element,name);
+		}
+		if(t.names[name]){
+			name = t.names[name];
+		}
+		if(name.include(":")){
+			return (!element.attributes ||
+				!element.attributes[name]?null:element.attributes[name].value)
+		}
+	}
+}  return element.getAttribute(name);
