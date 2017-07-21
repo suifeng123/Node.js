@@ -329,4 +329,234 @@ readAttribute = function(element,name){
 				!element.attributes[name]?null:element.attributes[name].value)
 		}
 	}
-}  return element.getAttribute(name);
+  return element.getAttribute(name);
+}
+
+
+function addEvent(el,type,callback,useCapture){
+	if(el.dispatchEvent){ //W3C方式
+		el.addEventListener(type,callback,!!useCapture);
+	}else{
+		el.attachEvent("on"+type,callback);
+	}
+	return callback;  //返回callback方便卸载时调用
+}
+
+function removeEvent(el,type,callback,useCapture){
+	if(el.dispatchEvent){
+		//w3c优先
+		if(el.dispatchEvent){
+			el.removeEventListener(type,callback,!!useCapture);
+		}else{
+			el.dispatchEvent("on"+type,callback);
+		}
+	}
+}
+
+function fireEvent(el,type,args,event){
+	args = args || {};
+
+	if(el.dispatchEvent){
+		//w3c方式优先
+		event = document.createEvent('HTMLEvents');
+		event.initEvent(type,true,true);
+	}else{
+		event = document.createEventObject();
+	}
+
+	for(var i in args){
+		if(args.hasOwnProperty(i)){
+			event[i] = args[i];
+		}
+	}
+
+	if(el.dispatchEvent){
+		el.dispatchEvent(event);
+	}else{
+		el.fireEvent('on'+type,event);
+	}
+}
+
+function addEvent(element,type,handler){
+	if(!handler.$$guid)
+		handler.$$guid = addEvent.guid++;
+	if(!element.events)
+		element.event = {};
+	var handlers = element.events[type];
+	if(!handlers){
+		handlers = element.events[type] = {};
+		if(element["on"+type]){
+			handlers[0] = element['on'+type];
+		}
+	}
+	//保存当前的回调
+	handlers[handler.$$guid] = handler;
+	element['on'+type] = handleEvent;
+}
+ add = function(elem,types,handler,data,selector){
+ 	var elemData,eventHandler,events,t,tns,type,
+ 	namespaces,handleObj,handleObjIn,handlers,special;
+ 	if(elem.nodeType === 3 || elem.nodeType === 8
+ 		|| !types || !handler || !(elemData = jQuery._data(elem))){
+ 		return;
+ 	}
+
+ }
+
+
+ remove = function(elem,types,handler,selector){
+ 	var t,tns,type,origType,namespaces,origCount,
+ 	j,events,special,eventType,handleObj,
+ 	elemData = jQuery.hasData(elem) && jQuery._data(elem);
+ 	types = jQuery.trim(hoverHack(types || "")).split(" ");
+ 	for(t = 0;t<types.length;t++){
+ 		tns = rtypenamespace.exec(types[t]) || [];
+ 		type = origType = tns[1];// 取得事件类型
+ 		namespaces = tns[2]; //取得命名空间
+ 		if(!type){
+ 			for(type in events){
+ 				jQuery.event.remove(elem,type+types[t],handler,selector,true);
+ 			}
+ 			continue;
+ 		}
+ 		special = jQuery.event.special[type] || {};
+ 		type = (selector ? special.delegateType : special)
+ 	}
+ }
+
+dispatch = function(event){
+	event = jQuery.event.fix(event || window.event);
+	var i,j,cur,ret,selMatch,matched,matches,handleObj,
+	sel,related,
+	handlers = ((jQuery._data(this,"events")||{})[event.type]||[]),
+	delegateCount = handlers.delegateCount,
+	args = core_slice.call(arguments),
+	run_all = !event.exclusive && !event.namespace,
+	special = jQuery.event.special[event.type]||{},
+	handleQueue = [];
+
+	arg[0] = event;
+	event.delegateTarget = this;//添加一个认为属性
+	if(sepecial.preDispatch && special.preDispatch.call(this,event)===false ){
+		return
+	}
+	if(delegateCount && !(event.button && event.type === 'click')){
+		selMatch = {};
+		matches = [];
+		for(i=0;i<delegateCount;i++){
+		 handleObj = handlers[i];
+		 sel = handleObj.selector;
+		 if(selMatch[sel] === undefined){
+		 	//有多少个元素匹配就收集多少个事件描述对象
+		 	selMatch[sel] = handleObj.needsContext?jQuery(sel,this).indexOf(cur) >= 0:
+		 	                jQuery.find(sel,this,null,[cur]).length;
+		 }	
+		}if(selMatch[sel]){
+			matches.push(handleObj);
+		}
+	}
+	if(matches.length){
+		handleQueue.push({elem:cur,matches:matches})
+	}
+}
+//取得其他直接绑定的事件描述对象
+if(handlers.length > delegateCount){
+	handlerQueue.push({elem:this,matches:handlers.slice(delegateCount)});
+}
+//这个循环是从下向上执行的
+
+jQuery.Event = function(src,prop){
+	//无“new”实例化
+	if(!(this instanceof jQuery.Event)){
+		return new jQuery.Event(src,props);
+	}
+
+	if(src & src.type){
+		this.originalEvent = src;
+		this.type = src.type;
+		this.isDefaultPrevented = (src.defaultPrevent ||
+			src.returnValue === false ||
+			src.getPreventDefault && src.getPreventDefault())?returnTrue:returnFalse;
+
+	}else{
+		this.type = type;
+	}
+	//如果是一个对象，复制它的属性
+	if(props){
+		jQuery.extend(this,props);
+	}
+	this.timeStamp = src && src.timeStamp || jQuery.now();
+
+	//标记已经修改正过
+	this[jQuery.expando] = true;
+};
+
+jQuery.Event.prototype = {
+	preventDefault: function(){
+		this.isDefaultPrevented = returnTrue;
+		var e = this.originalEvent;
+		if(!e){
+			return;
+		}
+		if(e.preventDefault){
+			e.preventDefault();
+		}else{
+			e.returnValue = false;
+		}
+	},
+	stopPropagation:function(){
+		this.isPropagationStopped = returnTrue;
+		var e = this.originalEvent;
+		if(!e){
+			return
+		}
+		if(e.stopPropagation){
+			e.stopPropagation()
+		}
+		e.cancelBubble = true;
+	},
+}
+
+Deferred.wait = function(n){
+	var d = new Deferred();
+	var t = new Date();
+	var id = setTimeout(function(){
+		d.call((new Date()).getTime() - t.getTime());
+	},n*1000);
+	d.canceller  = function(){
+		clearTimeout(id);
+	};
+	return d;
+};
+
+Deferred.register = function(name,fn){
+	this.prototype[name] = function() {
+		var a = arguments;
+		return this.next(function(){
+			return fun.apply(this,a);
+		});
+	};
+};
+
+Function.prototype.wait = function(){
+	var me = this;
+	var g = me(function(t){
+		try{
+			g.send();
+		}catch(e){
+
+		}
+	});
+	g.next();
+}
+
+Requester = function(a){
+	this.resume = a;
+};
+
+Requester.prototype.send = function(time){
+	var resume = this.resume;
+	setTimeout(function(){
+		resume(time);
+	},time);
+};
