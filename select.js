@@ -560,3 +560,103 @@ Requester.prototype.send = function(time){
 		resume(time);
 	},time);
 };
+
+(function(resume){
+	var r = Requester(resume);
+	var json = yield r.send(1000);
+	json = yield r.send(1000);
+
+}).wait();
+
+var BlobBuilder = window.MozBlobBuilder || window.WebKitBlobBuilder || window.MSBlobBuilder
+|| window.BlobBuilder;
+if(!BlobBuilder) {
+	console.log("BlobBuilder 已被废弃");
+}
+
+var xhr = new XMLHttpRequest();
+var img = document.getElementById('img');
+xhr.open('POST','image.jpg',true);
+xhr.setRequestHeader("X-Requested-With","XMLHttpRequest");
+xhr.responseType = 'arraybuffer';
+xhr.onload = function(e){
+	if(this.status === 200){
+		var bb = new BlobBuilder();
+		bb.append(this.response);
+		var blob = bb.getBlob('image/jpeg');
+		img.src = blob;
+
+	}
+};
+xhr.send();
+
+
+$.Observer = $.factory({
+	init: function(target){
+		this._event = {};
+		this._target = target || this;
+	},
+	bind: function(type,callback){
+		var listeners = this._events[type];
+		if(listeners){
+			listeners.push(callback);
+		}else {
+			this._events[type] = [callback];
+		}
+		return this;
+	},
+	unbind: function(type,callback){
+		var n = arguments.length;
+		if(n===0){
+			this._events = [];
+
+		}else if(n===1){
+
+			this._events[type] = [];
+		}else{
+			var listeners = this._events[type] || [];
+			var i = listeners.length;
+			while(--i > -1){
+				if(listeners[i] === callback){
+					return listeners.splice(i,1);
+				}
+			}
+		}
+		return this;
+	},
+	fire: function(type){
+        var listeners = (this._events[type] || []).concat(); //防止影响原数组
+        if(listeners.length){
+        	var target = this._target;
+        	var args = [].slice.call(arguments);
+        	if(this.rawFire){
+        		args.shift();
+        	}else{
+        		args[0] = {
+        			type:type,
+        			target:target
+        		};
+        	}
+        	for(var i = 0,callback;callback = listeners[i++];){
+        		callback.apply(target,args);
+        	}
+        }		
+	}
+})
+
+window.onload = fucntion(){
+	var el = document.getElementById('move');
+	var parent = doceument.getElementById('taxiway');
+	var distance = parent.offsetWidth - el.offsetWidth; //总移动距离
+	var begin = parseFloat(window.getComputedStyle(el,null).left); //开始位置
+    var end = begin + distance;
+    var fps = 30;
+    var interval = 1000 / fps;
+    var duration = 2000;
+    var times = duration / 1000 *fps;
+    var step = distance /times;
+
+}
+
+
+
