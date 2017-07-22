@@ -654,9 +654,159 @@ window.onload = fucntion(){
     var interval = 1000 / fps;
     var duration = 2000;
     var times = duration / 1000 *fps;
-    var step = distance /times;
+    var step = distance / times;
+
 
 }
 
 
 
+//jQuery里面关于动画的代码
+linear: function(p){
+	return p;
+},
+swing: function(p){
+	return 0.5 - Math.cos(p*Math.PI) / 2;
+}
+
+
+var timeline = $.timeline = [];//时间轴
+
+function inserFrame(frame){
+	if(frame.queue) {
+		var gotoQueue = 1;
+		for(var i = timeline.length,el;el = timeline[--i];){
+			if(el.node === frame.node){
+				el.positive.push(frame);
+				gotoQueue = 0;
+				break;
+			}
+		}
+		if(gotoQueue){
+			timeline.unshift(frame);
+		}
+	}else{
+		timeline.push(frame);
+	}
+	if(insertFrame.id === null){
+		insertFrame.id = setInterval(deleteFrame, 1000/$.fps);
+	}
+}
+
+insertFrame.id = null;
+
+
+var AnimationPreproccess = {
+	noop: $.noop,
+	show: function(node,frame){
+		if(node.nodeType === 1 && $.isHidden(node)){
+           var display = $._data(node,'olddisplay');
+           if(!display || display === 'node'){
+           	  display = $.parseDisplay(node.nodeName);
+           	  $._data(node,"olddisplay",display);
+           }
+           node.style.display = display;
+           if("width" in frame.props || "height" in frame.props){
+           	   if(display === 'inline' && $.css(node,'float')==='none'){
+           	   	 if(!$.support.inlineBlockNeedsLayout){
+           	   	 	node.style.display = "inline-block";
+           	   	 }else{
+           	   	 	if(display === 'inline'){
+           	   	 		node.style.display = "inline-block";
+           	   	 	}else{
+           	   	 		node.style.display = "inline";
+           	   	 		node.style.zoom = 1;
+           	   	 	}
+           	   	 }
+           	   }
+           }
+		}
+	},
+	hide: function(node,frame){
+
+	}
+}
+
+
+(function($){
+	//这个东西叫做IIFE
+	$.fn.extend({
+		//插件名称
+		pluginname: function(){
+			//遍历匹配元素的集合
+			return this.each(function(){
+               //在这里进行编写相应代码进行处理
+			});
+		}
+	})
+	//传递jQuery到内层作用域，如果window document 在里面用的多的话，也可以穿进去
+})(jQuery);
+
+(function($){
+	//这个东西叫IIFE
+	//扩展这个方法到jquery
+	var Plugin = function(){}
+	Plugin.prototype = {};
+	$.extend({
+		//插件名称
+		pluginname: function(options){
+			//用户的统一的配置对象或者方法名
+			//遍历匹配元素的配合
+			var args = [].slice.call(arguments,1);
+			return this.each(function(){
+				//在这里编写相应代码处理
+				var ui = $._data(this,pluginname);
+				if(!ui){
+					var opts = $.extend(true,{},$.fn.pluginname.defaults,
+						typeof options === 'object'?options:{});
+						ui = new Plugn(opts,this);
+						$._data(this,pluginname,ui);
+				}
+				if(typeof options==='string' && typeof ui[options]==='function'){
+					ui[options].apply(ui,args);
+				}
+			})
+		}
+	});
+	$.fn.pluginname.defaults = {}
+})(jQuery);
+
+
+//angular 将字符串转换为函数的部分代码
+$watch = function(watchExp,listener,objectEquality){
+	var scope = this;
+	var get = compileToFn(watchExp,'watch');
+	var array = scope.$$watchers;
+	var watcher = {
+        fn: listener,
+        last: initWatchVal,
+        get: get,
+        exp: watchExp,
+        eq: !!objectEquality
+	};
+	if(!isFunction(listener)){
+		var listenFn = compileToFn(listener || noop,'listener');
+		watcher.fn = function(newVal,oldVal,scope){
+			listenFn(scope);
+		};
+	}
+	if(!array) {
+		array = scope.$$watchers = [];
+	}
+	array.unshift(watcher);
+	return function(){
+		arrayRemove(array,watcher);
+	};
+}
+
+function compileToFn(exp,name){
+	var fn = $parse(exp);
+	assertArgFn(fn,name);
+	return fn;
+}
+
+var name,oldValue,val,
+get = function(){
+	oldValue = this[name];
+	//
+}
