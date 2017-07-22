@@ -808,5 +808,152 @@ function compileToFn(exp,name){
 var name,oldValue,val,
 get = function(){
 	oldValue = this[name];
-	//
+	//这里用于收集订阅者，订阅者为调用这个get方法的某个视图函数
+	//这个getter肯能被包含基层，可能是caller.caller.caller
+	Observer.bind(name,arguments.callee.caller);
+	return oldValue;
+}
+
+set = function(val){
+	if(oldValue !== val){
+		oldValue = val;
+	    Observer.fire(this,name,val);//通知订阅者更新
+	}
+
+}
+
+avalon.define("user",[],function(vm){
+	vm.firstName = "司徒";//监控属性
+	vm.lastName = "正美"; //监控属性
+	//计算属性
+	//一个包含set或get的对象方便加工为Object.defineProperties的第2个参数
+	vm.fullName = {
+		set: function(val){
+			var array = (val || "").split(" ");
+			this.firstName = array[0] || "";
+			this.lastName = array[1] || "";
+		},
+		get: function(){
+			return this.firstName + " "+this.lastName;
+		}
+	}
+})
+
+avalon.define(function(vm){
+	vm.salutation = "Hello";
+	vm.name = "World";
+	vm.greet = function(){
+		vm.greeting = vm.salutation + ' ' + vm.name + "!";
+	}
+})
+
+//第1阶段，在循环中拼凑出一个这样的对象
+var description = {
+	salutation: {
+		set: accessor1,
+		get: accessor1,
+		enumberable:true
+	},
+	name: {
+		set: accessor2,
+		get: accessor2,
+		enumberable: true
+	}
+}
+
+//第2阶段，得到一个充满访问器的对象
+var viewmodel = {};
+if(Object.defineProperties){
+	Object.defineProperties(viewmodel,description)
+}else{
+	viewmodel = Object.defineProperties(description,names);
+}
+//第3个阶段，赋值和填充函数
+viewmodel.salutation = vm.salutation;
+viewmodel.name = vm.name;
+viewmodel.greet = vm.greet;
+viewmodel.$id = 'xsddfsdrfr';
+
+avalon.define = function(name,deps,factory){
+	var args = [].slice.call(arguments);
+	if(typeof name !== 'string'){
+		name = !avalon.models['root']?"root":modelID();
+		args.unshift(name);
+	}
+	if(!Array.isArray(args[1])){
+		args.splice(1,0,[]);
+	}
+	deps = args[1];
+	if(typeof args[2]!=='function'){
+		avalon.error('factory必须是函数');
+	}
+
+	factory = args[2];
+	var scope = {};
+	deps.unshift(scope); //得到所有属性与方法
+	factory(scope);
+	var model = modelFactory(scope);
+	stopRepeatAssign = true;
+	deps[0] = model;
+	factory.apply(0,deps);
+	deps.shift();
+	stopRepeatAssign = false;
+	model.$id = name;
+	return avalon.models[name] = model;
+};
+
+avalon.Array = {
+	ensure: function(target){
+		var args = [].slice.call(arguments,1);
+		args.forEach(function(el){
+			if(target.indexOf(el)===-1){
+				target.push(el);
+			}
+		});
+		return target;
+	}
+}
+
+
+avalon.bindingHandlers.visible = function(data,scopes) {
+	var element = data.element;
+	watchView(data.value,scopes,data,function(val){
+		element.style.display = val?"block":"none";
+	})
+};
+//watchView的实现
+function watchView(text,scopes,data,callback,tokens){
+	var updateView,target;
+	var trimText = text.trim();
+	//创建一个updateView
+	updateView = function(){
+		//略
+	};
+	//这里非常重要，我们通过判定视图刷新函数element是否在DOM数决定
+	//将它移出订阅者列表
+	updateView.element = data.element;
+	Publish[expando] = updateView;//曝光此函数，方便collectSubscriber函数
+	openComputedCollect = true;
+	updateView();
+	openComputedCollect = false;
+	delete Publish[expando];
+}
+if(oldArgs !== neo){
+	if(Array.isArray(neo)){
+		if(oldValue && oldValue.isCollection){
+			updateCollection(oldValue,neo);
+		} else {
+			oldValue = Collection(neo);
+		}
+	}else if(avalon.type(neo) === 'Object'){
+		if(oldValue && oldValue.$id){
+			updateModel(oldValue,neo);
+		}else{
+			oldValue = modelFactory(neo);
+		}
+	}else{
+		oldValue = neo;
+	}
+	notifySubscribers(accessor); //通知顶层改变
+	model.$events && model.$fire(name,neo,oldValue);
 }
