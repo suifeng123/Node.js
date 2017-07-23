@@ -134,3 +134,57 @@ function log(errType,errorCode,controller,otherInfo){
 	addLog(errType,errorMsg);
 	log4js.clearAppenders();
 }
+
+function getJson(fileName,filePath,key){
+	try{
+		var str = fs.readFileSync(filePath,'utf-8');
+		var configJson = JSON.parse(str);
+	}else{
+		console.log(e);
+		return '';
+	}
+	CONFIG[fileName] = configJson;
+	return configJson[key] ? configJson[key] : configJson;
+}
+
+function getCache(filePath,fileName,key){
+	var stat = fs.statSync(filePath);
+	var timeStamp = Date.parse(stat['mtime']);
+}
+
+function get(){
+	var fileName = arguments[0],
+	    type     = arguments[1],
+	    key      = arguments[2]?arguments[2]:'';
+	var filePath = 'conf/' + fileName;
+	//从cache中读取数据
+	var cacheData = getCache(filePath,fileName,key);
+	if(caccheData){
+		return cacheData;
+	}
+}
+
+
+circle_task: function(){
+	var sec = arguments[0],
+	    task = arguments[1];
+	if(!sec || !task){
+		callback('');
+	}
+	//如果是函数任务时，则执行函数
+	if(typeof task == 'function'){
+		setInterval(function(){
+			task.call();
+		},sec);
+	}
+	//如果是字符类型时，则执行当做shell执行
+	if(typeof task === 'string'){
+		setInterval(function(){
+			var spawn = require('child_process').spawn;
+			var shell = spawn(task);
+			shell.stdout.on('data',function(data){
+				console.log('stdout: '+data);
+			})
+		},sec);
+	}
+}
