@@ -1,0 +1,20 @@
+<DOCTYPE html>
+<html>
+<head>
+<title>画图Canvas</title>
+</head>
+<body>
+<canvas id="mo" width="300" height="180"
+style="border:1px solid black"></canvas>
+<script type="text/javascript">
+  //获取canvas 元素上的dom元素
+  var canvas = document.getElememtById('mo');
+  //获取canvas 上对象
+  var ctx = canvas.getContext('2d');
+  //进行填充颜色
+  ctx.fillStyle = '#f00';
+  //绘制矩形
+  ctx.fillReact(30,40,80,100);
+</script>
+</body>
+</html>
