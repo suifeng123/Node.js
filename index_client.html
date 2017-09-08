@@ -7,39 +7,13 @@
 <h1>监控</h1>
 <script src="socket.io.js"></script>
 <script>
-  var socket = io('http://localhost');
-  var i = 0;
-  function getData(socket){
-        return function(){
-        console.log('asdf');
-  	    console.log(socket);
-  		socket.on('news',(data)=>{
-  			console.log(data);
-  			console.log('进行了监控'+i);
-  			socket.emit('my other event',{my: 'data'});
-  			i++;
-  		})
-  	}
-  }
-  /*
-  socket.on('news', function (data) {
-    console.log(data);
-    socket.emit('my other event', { my: 'data' });
-  });
-  */
- console.log('监听数据');
- function ff(){
- 	console.log('监听次数'+i);
- 	i++;
- }
+var socket = io('http://localhost');
+
 socket.on('news',(data)=>{
-  			console.log(data);
-  			console.log('进行了监控'+i);
-  			socket.emit('my other event',{my: 'data'});
-  			i++;
+  console.log(data); //从后端传过来的信息
+  socket.emit('my other event',{my: 'data'});  		
 })
-  //setInterval(getData(socket),1000);
-  //setInterval(ff,1000);
+  
 </script>
 </body>
 </html> 
