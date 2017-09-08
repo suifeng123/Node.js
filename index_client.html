@@ -9,9 +9,11 @@
 <script>
   var socket = io('http://localhost');
   var i = 0;
-  function getData(){
-  	return function(){
-  		socket.on('news',function(data){
+  function getData(socket){
+        return function(){
+        console.log('asdf');
+  	    console.log(socket);
+  		socket.on('news',(data)=>{
   			console.log(data);
   			console.log('进行了监控'+i);
   			socket.emit('my other event',{my: 'data'});
@@ -19,12 +21,25 @@
   		})
   	}
   }
+  /*
   socket.on('news', function (data) {
     console.log(data);
     socket.emit('my other event', { my: 'data' });
   });
-
-  setInterval(getData,1000);
+  */
+ console.log('监听数据');
+ function ff(){
+ 	console.log('监听次数'+i);
+ 	i++;
+ }
+socket.on('news',(data)=>{
+  			console.log(data);
+  			console.log('进行了监控'+i);
+  			socket.emit('my other event',{my: 'data'});
+  			i++;
+})
+  //setInterval(getData(socket),1000);
+  //setInterval(ff,1000);
 </script>
 </body>
 </html> 
