@@ -26,3 +26,6 @@ String.raw = function(string,...values){
 	output += string.raw[index];
 	return output;
 }
+ String.sum = function(x,y){
+	 return x+y;
+ }
