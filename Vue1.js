@@ -1,6 +1,6 @@
 //实现一个Observer
 /*
-1.实现双向数据绑定需要三样东西  Observer Compiler Watcher
+1.实现双向数据绑定需要三样东西  Observer Compiler Watcher  11111111
  */
 
 //首先实现一个Observer
